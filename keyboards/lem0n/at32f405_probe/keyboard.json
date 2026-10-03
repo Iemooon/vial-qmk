@@ -1,0 +1,169 @@
+{
+  "keyboard_name": "at32f405_probe",
+  "manufacturer": "lem0n",
+  "processor": "AT32F405",
+  "bootloader": "at32-dfu",
+  "usb": {
+    "vid": "0x3434",
+    "pid": "0x0001"
+  },
+  "features": {
+    "bootmagic": true,
+    "nkro": true,
+    "extrakey": true,
+    "mousekey": true
+  },
+  "build": {
+    "debounce_type": "custom"
+  },
+  "debounce": 5,
+  "matrix_pins": {
+    "cols": [
+      "C7",
+      "C8",
+      "C10",
+      "C11"
+    ],
+    "rows": [
+      "C12",
+      "D2",
+      "B3",
+      "B4"
+    ]
+  },
+  "diode_direction": "COL2ROW",
+  "layouts": {
+    "LAYOUT_ortho_4x4": {
+      "layout": [
+        {
+          "matrix": [
+            0,
+            0
+          ],
+          "x": 0,
+          "y": 0
+        },
+        {
+          "matrix": [
+            0,
+            1
+          ],
+          "x": 1,
+          "y": 0
+        },
+        {
+          "matrix": [
+            0,
+            2
+          ],
+          "x": 2,
+          "y": 0
+        },
+        {
+          "matrix": [
+            0,
+            3
+          ],
+          "x": 3,
+          "y": 0
+        },
+        {
+          "matrix": [
+            1,
+            0
+          ],
+          "x": 0,
+          "y": 1
+        },
+        {
+          "matrix": [
+            1,
+            1
+          ],
+          "x": 1,
+          "y": 1
+        },
+        {
+          "matrix": [
+            1,
+            2
+          ],
+          "x": 2,
+          "y": 1
+        },
+        {
+          "matrix": [
+            1,
+            3
+          ],
+          "x": 3,
+          "y": 1
+        },
+        {
+          "matrix": [
+            2,
+            0
+          ],
+          "x": 0,
+          "y": 2
+        },
+        {
+          "matrix": [
+            2,
+            1
+          ],
+          "x": 1,
+          "y": 2
+        },
+        {
+          "matrix": [
+            2,
+            2
+          ],
+          "x": 2,
+          "y": 2
+        },
+        {
+          "matrix": [
+            2,
+            3
+          ],
+          "x": 3,
+          "y": 2
+        },
+        {
+          "matrix": [
+            3,
+            0
+          ],
+          "x": 0,
+          "y": 3
+        },
+        {
+          "matrix": [
+            3,
+            1
+          ],
+          "x": 1,
+          "y": 3
+        },
+        {
+          "matrix": [
+            3,
+            2
+          ],
+          "x": 2,
+          "y": 3
+        },
+        {
+          "matrix": [
+            3,
+            3
+          ],
+          "x": 3,
+          "y": 3
+        }
+      ]
+    }
+  }
+}
