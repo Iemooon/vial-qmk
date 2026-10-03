@@ -476,6 +476,14 @@ OPT_DEFS += -DPROTOCOL_CHIBIOS
 # And what flavor of MCU
 OPT_DEFS += -DMCU_$(MCU_FAMILY)
 
+# AT32 package macro.
+#
+# Do NOT derive this from MCU_LDSCRIPT: that names the flash *density*
+# (AT32F405xB / AT32F405xC), whereas the registry switches on the
+# *package* (AT32F405Kx / AT32F405Cx / AT32F405Rx). The package is declared by
+# the board, in its own board.h - see GENERIC_AT32_F405XX.
+
+
 # ChibiOS supports synchronization primitives like a Mutex
 OPT_DEFS += -DPLATFORM_SUPPORTS_SYNCHRONIZATION
 

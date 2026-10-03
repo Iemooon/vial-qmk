@@ -154,6 +154,19 @@
 #        define PAL_MODE_ALTERNATE_OPENDRAIN PAL_MODE_AT32_MUX_OPENDRAIN
 #        define PAL_MODE_ALTERNATE_PUSHPULL PAL_MODE_AT32_MUX_PUSHPULL
 #        define AUDIO_PWM_PAL_MODE PAL_MODE_ALTERNATE_PUSHPULL
+#    else
+// The AT32F402/F405 port is GPIOv2 based, so it needs the same generic
+// aliases the STM32v2 GPIO port provides. PAL_AT32_ODRV_* rather than
+// PAL_AT32_ODRVR_* is the name this port's hal_pal_lld.h defines.
+#        define PAL_OUTPUT_TYPE_OPENDRAIN PAL_AT32_OMODE_OPENDRAIN
+#        define PAL_OUTPUT_TYPE_PUSHPULL PAL_AT32_OMODE_PUSHPULL
+#        define PAL_OUTPUT_SPEED_HIGHEST PAL_AT32_ODRV_STRONGER
+#        define PAL_PUPDR_FLOATING PAL_AT32_PULL_FLOATING
+#        define PAL_MODE_ALTERNATE_OPENDRAIN PAL_MODE_ALTERNATE
+#        define PAL_MODE_ALTERNATE_PUSHPULL PAL_MODE_ALTERNATE
+#        ifndef AUDIO_PWM_PAL_MODE
+#            define AUDIO_PWM_PAL_MODE PAL_MODE_ALTERNATE_PUSHPULL
+#        endif
 #    endif
 #endif
 

@@ -272,7 +272,7 @@ typedef uint32_t ws2812_buffer_t;
 #        define WS2812_PWM_DMA_PERIPHERAL_WIDTH STM32_DMA_CR_PSIZE_HWORD
 typedef uint16_t ws2812_buffer_t;
 #    endif
-#elif defined(AT32F415)
+#elif defined(AT32F405xx) || defined(AT32F415)
 #    define WS2812_PWM_DMA_MEMORY_WIDTH AT32_DMA_CCTRL_MWIDTH_BYTE
 #    if defined(WS2812_PWM_TIMER_32BIT)
 #        define WS2812_PWM_DMA_PERIPHERAL_WIDTH AT32_DMA_CCTRL_PWIDTH_WORD
@@ -320,7 +320,7 @@ void ws2812_init(void) {
                 [0 ... 3]                = {.mode = PWM_OUTPUT_DISABLED, .callback = NULL},    // Channels default to disabled
                 [WS2812_PWM_CHANNEL - 1] = {.mode = WS2812_PWM_OUTPUT_MODE, .callback = NULL}, // Turn on the channel we care about
             },
-#if defined(AT32F415)
+#if defined(AT32F405xx) || defined(AT32F415)
         .ctrl2 = 0,
         .iden  = AT32_TMR_IDEN_OVFDEN, // DMA on update event for next period
 #else
@@ -337,7 +337,7 @@ void ws2812_init(void) {
     dmaStreamSetSource(WS2812_PWM_DMA_STREAM, ws2812_frame_buffer);
     dmaStreamSetDestination(WS2812_PWM_DMA_STREAM, &(WS2812_PWM_DRIVER.tim->CCR[WS2812_PWM_CHANNEL - 1])); // Ziel ist der An-Zeit im Cap-Comp-Register
     dmaStreamSetMode(WS2812_PWM_DMA_STREAM, WB32_DMA_CHCFG_HWHIF(WS2812_PWM_DMA_CHANNEL) | WB32_DMA_CHCFG_DIR_M2P | WB32_DMA_CHCFG_PSIZE_WORD | WB32_DMA_CHCFG_MSIZE_WORD | WB32_DMA_CHCFG_MINC | WB32_DMA_CHCFG_CIRC | WB32_DMA_CHCFG_TCIE | WB32_DMA_CHCFG_PL(3));
-#elif defined(AT32F415)
+#elif defined(AT32F405xx) || defined(AT32F415)
     dmaStreamAlloc(WS2812_PWM_DMA_STREAM - AT32_DMA_STREAM(0), 10, NULL, NULL);
     dmaStreamSetPeripheral(WS2812_PWM_DMA_STREAM, &(WS2812_PWM_DRIVER.tmr->CDT[WS2812_PWM_CHANNEL - 1])); // Ziel ist der An-Zeit im Cap-Comp-Register
     dmaStreamSetMemory0(WS2812_PWM_DMA_STREAM, ws2812_frame_buffer);
