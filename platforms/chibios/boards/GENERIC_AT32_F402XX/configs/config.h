@@ -22,9 +22,3 @@
 #define SW_I2C_USE_I2C3                     FALSE
 #define SW_I2C_USE_I2C4                     FALSE
 
-/*
- * The AT32 EFL driver has no runtime flash-size register, so
- * wear_leveling_efl.c reads this instead. 128k matches the length in
- * AT32F405xB.ld, which is what this firmware links against.
- */
-#define WEAR_LEVELING_EFL_FLASH_SIZE (128 * 1024)

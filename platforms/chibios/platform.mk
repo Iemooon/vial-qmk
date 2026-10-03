@@ -476,6 +476,27 @@ OPT_DEFS += -DPROTOCOL_CHIBIOS
 # And what flavor of MCU
 OPT_DEFS += -DMCU_$(MCU_FAMILY)
 
+# AT32 flash density.
+#
+# The AT32 EFL driver exposes no runtime flash-size register, so
+# platforms/chibios/drivers/wear_leveling/wear_leveling_efl.c needs the size
+# handed to it. Derive it from MCU_LDSCRIPT - the same variable that picks the
+# linker script - so the linked flash geometry and the wear-levelling geometry
+# cannot disagree. An unlisted density is a hard error rather than a silently
+# wrong sector limit.
+ifneq ($(filter AT32%,$(MCU_LDSCRIPT)),)
+ifneq ($(findstring xA,$(MCU_LDSCRIPT)),)
+AT32_FLASH_SIZE := 65536
+else ifneq ($(findstring xB,$(MCU_LDSCRIPT)),)
+AT32_FLASH_SIZE := 131072
+else ifneq ($(findstring xC,$(MCU_LDSCRIPT)),)
+AT32_FLASH_SIZE := 262144
+else
+$(error MCU_LDSCRIPT='$(MCU_LDSCRIPT)' is an AT32 linker script with no known flash size; add it here rather than letting wear levelling compute a wrong sector limit)
+endif
+OPT_DEFS += -DWEAR_LEVELING_EFL_FLASH_SIZE=$(AT32_FLASH_SIZE)
+endif
+
 # AT32 package macro.
 #
 # Do NOT derive this from MCU_LDSCRIPT: that names the flash *density*
