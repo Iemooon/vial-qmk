@@ -151,7 +151,7 @@
 /*
  * I2C driver system settings.
  */
-#define AT32_I2C_USE_I2C1                   FALSE
+#define AT32_I2C_USE_I2C1                   TRUE
 #define AT32_I2C_USE_I2C2                   FALSE
 #define AT32_I2C_USE_I2C3                   FALSE
 #define AT32_I2C_USE_I2C4                   FALSE

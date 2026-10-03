@@ -15,6 +15,10 @@
  */
 #pragma once
 
+/* External 24LC256 (32 kB, 2-byte addressing). Address pins all
+ * grounded, so the default base 0b10100000 applies. */
+#define EEPROM_I2C_24LC256
+
 #define NO_ACTION_ONESHOT
 
 /* Ported from STM32F411 to AT32F405 for a compile test.

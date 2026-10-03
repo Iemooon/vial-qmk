@@ -395,8 +395,8 @@
                                      PIN_MUX(GPIOB_PIN3, 0U) |        \
                                      PIN_MUX(GPIOB_PIN4, 0U) |        \
                                      PIN_MUX(GPIOB_PIN5, 0U) |        \
-                                     PIN_MUX(GPIOB_PIN6, 0U) |        \
-                                     PIN_MUX(GPIOB_PIN7, 0U))
+                                     PIN_MUX(GPIOB_PIN6, 2U) |        \
+                                     PIN_MUX(GPIOB_PIN7, 2U))
 #define VAL_GPIOB_MUXH              (PIN_MUX(GPIOB_PIN8, 0U) |        \
                                      PIN_MUX(GPIOB_PIN9, 0U) |        \
                                      PIN_MUX(GPIOB_PIN10, 0U) |       \
