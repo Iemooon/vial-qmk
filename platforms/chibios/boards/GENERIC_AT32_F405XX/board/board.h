@@ -330,8 +330,8 @@
                                      PIN_MODE_INPUT(GPIOB_PIN3) |           \
                                      PIN_MODE_INPUT(GPIOB_PIN4) |           \
                                      PIN_MODE_INPUT(GPIOB_PIN5) |           \
-                                     PIN_MODE_INPUT(GPIOB_PIN6) |           \
-                                     PIN_MODE_INPUT(GPIOB_PIN7) |           \
+                                     PIN_MODE_MUX(GPIOB_PIN6) |           \
+                                     PIN_MODE_MUX(GPIOB_PIN7) |           \
                                      PIN_MODE_INPUT(GPIOB_PIN8) |           \
                                      PIN_MODE_INPUT(GPIOB_PIN9) |           \
                                      PIN_MODE_INPUT(GPIOB_PIN10) |          \
