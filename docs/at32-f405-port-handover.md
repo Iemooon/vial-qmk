@@ -241,3 +241,26 @@ cd vial-qmk
 ```
 
 产物基准（外接 EEPROM 版）：`ortho75_vial.elf 73,748B`／`.bin 36,756B`／`.hex 103,392B`；内置 flash 版：`.bin 36,588B`。
+
+---
+
+## 12. 服务器侧追加（2026-10-03 晚，commit `b65faa0`）
+
+§2 的拓扑自本条起过时：**lib/chibios 也已 fork**（坑6 同构，第二次踩在同一原则前——子模块 gitlink 不带补丁）。新拓扑：
+
+```
+lib/chibios          → Iemooon/ChibiOS  分支 at32-f405-hs = 8bd61b80 + 0fdfc0eb（usbStartTransmitI 门控，6 行）
+lib/chibios-contrib  → Iemooon/ChibiOS-Contrib 分支 at32-f405-hs = 5aacc82 + 6218d79a（AT32 OTGv1 LLD 两个 report_interval 字段）
+```
+
+§9 的降速层已整链移植（Keychron 四文件→本树）：
+
+- 门控 `hal_usb.c usbStartTransmitI`（chibios fork）；字段 `hal_usb_lld.h`（contrib fork）；
+- `usb_main.c`：`usb_sof_cb` 帧边界节奏（`wait_us(20)`+两 EP 重挂，Keychron 原样）+ `update_usb_report_interval` + init/restart 双挂；
+- `usb_driver.c`：`usb_endpoint_in_tx` + tx-complete 里计数清零；
+- `keyboards/ortho75/usb_report_rate.c/.h` + `ortho75.c`：div 存 **EECONFIG_USER dword**（Keychron 的 EECONFIG_BASE_HSUSB_REPORT_RATE 布局此树不存在，user 槽零占用），**新片/擦除态=0xFF→回 div=0=直满 8K，出厂默认就是 8K**；div 0/1/2/3=8K/4K/2K/1K；改档 API `report_rate_set_div()`（Vial 侧 UI 未接，Keychron 的 launcher/RGB 指示已按需裁掉）。
+- 一处刻意偏离 Keychron：其 `update_usb_report_interval` 用 LUT 下标写 interval 槽、门控却按真实 EP 号读——本移植按 EP 号写（`SHARED_IN_EPNUM`/`KEYBOARD_IN_EPNUM`，循环上界 `USB_MAX_ENDPOINTS`），保证键盘 EP 真受限。
+
+全部包在 `USB_REPORT_INTERVAL_ENABLE` 内，由 `ortho75/rules.mk` 仅在 `AT32F405` 链接脚本时定义；其它板型零扰动。Linux 全量构建绿（arm-gcc 13.2.1，text+data 37,340B）。
+
+**仍未闭环**：真机 HS 枚举（板子制造中，届时 `lsusb -v`/USBlyzer 抓协商速度与端点周期）；Device Qualifier／Other-Speed Config 描述符依旧两树皆缺——Keychron 无它量产成立，先不加，若上机发现主机不容忍再补；debounce 策略待实测定。板为“芯片直连 OTGHS＋外接 HS 芯片”双验证设计，本固件走直连路。
