@@ -13,3 +13,12 @@ LDFLAGS += -flto=auto
 # move off it is that AT32 flash erases in whole 2 kB sectors and an
 # erase blocks code fetch, which is audible as a hitch while remapping.
 EEPROM_DRIVER = i2c
+
+# 8K report-rate machinery (Keychron usb_report_rate port): frame pacing in
+# usb_main.c/usb_driver.c, skip-gate in ChibiOS' usbStartTransmitI (needs the
+# Iemooon/ChibiOS fork), fields in the AT32 OTGv1 LLD (Iemooon/ChibiOS-Contrib).
+# Only enabled for the AT32F405 link — other LD scripts lack the fields.
+ifneq ($(findstring AT32F405,$(MCU_LDSCRIPT)),)
+OPT_DEFS += -DUSB_REPORT_INTERVAL_ENABLE
+SRC += usb_report_rate.c
+endif

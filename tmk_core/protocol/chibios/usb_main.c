@@ -55,6 +55,11 @@ extern keymap_config_t keymap_config;
 #    define usb_lld_disconnect_bus(usbp)
 #endif
 
+#if defined(USB_REPORT_INTERVAL_ENABLE)
+extern void usb_endpoint_in_tx(USBDriver *usbp, usbep_t ep);
+uint8_t usb_report_interval = 0;
+#endif
+
 extern usb_endpoint_in_t  usb_endpoints_in[USB_ENDPOINT_IN_COUNT];
 extern usb_endpoint_out_t usb_endpoints_out[USB_ENDPOINT_OUT_COUNT];
 
@@ -329,10 +334,55 @@ static bool usb_requests_hook_cb(USBDriver *usbp) {
     return false;
 }
 
+#if defined(USB_REPORT_INTERVAL_ENABLE)
+/* Frame-boundary pacing for the Keychron-style report-rate limiter: count the
+ * SOFs (1 ms frames at FS, 125 us microframes at HS) since the last completed
+ * report and re-arm whatever buffer is already queued.  The skip-gate itself
+ * lives in ChibiOS' usbStartTransmitI(), guarded by the same macro.
+ * bInterval stays 1: at HS that means every microframe (8K); this layer only
+ * ever *divides* the rate down (interval = (1 << div) - 1 frames skipped). */
+static void usb_sof_cb(USBDriver *usbp) {
+    wait_us(20);
+    if (usbp->epc[KEYBOARD_IN_EPNUM]) {
+        USBInEndpointState *isp = usbp->epc[KEYBOARD_IN_EPNUM]->in_state;
+
+        if (isp->report_interval_count < usbp->report_interval[KEYBOARD_IN_EPNUM]) ++isp->report_interval_count;
+
+        if (!usbGetTransmitStatusI(usbp, KEYBOARD_IN_EPNUM)) {
+            usb_endpoint_in_tx(usbp, KEYBOARD_IN_EPNUM);
+        }
+    }
+
+    if (usbp->epc[SHARED_IN_EPNUM]) {
+        USBInEndpointState *isp = usbp->epc[SHARED_IN_EPNUM]->in_state;
+
+        if (isp->report_interval_count < usbp->report_interval[SHARED_IN_EPNUM]) ++isp->report_interval_count;
+
+        if (!usbGetTransmitStatusI(usbp, SHARED_IN_EPNUM)) {
+            usb_endpoint_in_tx(usbp, SHARED_IN_EPNUM);
+        }
+    }
+}
+
+void update_usb_report_interval(USBDriver *usbp, uint8_t interval) {
+    for (int i = 0; i < USB_MAX_ENDPOINTS; i++) {
+        usbp->report_interval[i] = 0;
+    }
+
+    usbp->report_interval[SHARED_IN_EPNUM] = interval;
+#    if !defined(KEYBOARD_SHARED_EP)
+    usbp->report_interval[KEYBOARD_IN_EPNUM] = interval;
+#    endif
+}
+#endif
+
 static const USBConfig usbcfg = {
     usb_event_cb,          /* USB events callback */
     usb_get_descriptor_cb, /* Device GET_DESCRIPTOR request callback */
     usb_requests_hook_cb,  /* Requests hook callback */
+#if defined(USB_REPORT_INTERVAL_ENABLE)
+    usb_sof_cb,            /* SOF callback */
+#endif
 };
 
 void init_usb_driver(USBDriver *usbp) {
@@ -354,6 +404,9 @@ void init_usb_driver(USBDriver *usbp) {
     usbDisconnectBus(usbp);
     usbStop(usbp);
     wait_ms(50);
+#if defined(USB_REPORT_INTERVAL_ENABLE)
+    update_usb_report_interval(usbp, usb_report_interval);
+#endif
     usbStart(usbp, &usbcfg);
     usbConnectBus(usbp);
 }
@@ -382,6 +435,9 @@ __attribute__((weak)) void restart_usb_driver(USBDriver *usbp) {
         usb_endpoint_out_start(&usb_endpoints_out[i]);
     }
 
+#if defined(USB_REPORT_INTERVAL_ENABLE)
+    update_usb_report_interval(usbp, usb_report_interval);
+#endif
     usbStart(usbp, &usbcfg);
     usbConnectBus(usbp);
 }
